@@ -1,33 +1,88 @@
 ﻿# The script of the game goes in this file.
 
-# Declare characters used by this game. The color argument colorizes the
-# name of the character.
-
-define e = Character("Eileen")
-
-
 # The game starts here.
 
 label start:
+    $ inv = Inventory()
 
-    # Show a background. This uses a placeholder by default, but you can
-    # add a file (named either "bg room.png" or "bg room.jpg") to the
-    # images directory to show it.
+    scene bg waterfall
 
-    scene bg room
+    show scientist happy with dissolve
 
-    # This shows a character sprite. A placeholder is used, but you can
-    # replace it by adding a file named "eileen happy.png" to the images
-    # directory.
+    s "Sprite test."
 
-    show eileen happy
+    show scientist sad
 
-    # These display lines of dialogue.
+    s "1."
 
-    e "You've created a new Ren'Py game."
+    show scientist sad2
 
-    e "Once you add a story, pictures, and music, you can release it to the world!"
+    s "2."
 
-    # This ends the game.
+    show scientist angry
+    
+    s "3."
+    
+    show scientist shocked
+
+    s "4."
+
+    show scientist happy at right
+
+    s "height test."
+
+    show robot happy at left
+
+    r "test."
+
+    r "Reset?"
+
+    menu:
+        "Yes":
+            jump start
+
+        "No":
+            r "Continuing."
+
+    hide scientist with dissolve
+    hide robot with dissolve
+
+    show screen debug
+    if not inv.handheld_unlocked:
+        call screen handheld_tutorial with dissolve
+
+    else:
+        call screen handheld with dissolve
+
+
+label device_unlock:
+    "Now that your device is unlocked, you can enter your name."
+    call screen handheld_tutorial with dissolve
 
     return
+
+label name_entered:
+    python:
+        name = name.strip().capitalize()
+    if name != "":
+        $ player = Player(name)
+        $ side = Side_char()
+        player.name "Done"
+        jump device_testing
+    else:
+        "You forgot to enter your name..."
+        call screen handheld_tutorial with dissolve
+
+label device_testing:
+    $ inv.pickup_item("test_item")
+    $ player.current_label = "device_testing"
+    "Testing device"
+    call screen handheld with dissolve
+    $ inv.held_item = "Test_item"
+    "Testing inventory"
+    call screen handheld with dissolve
+
+
+label location_control:
+    if player.current_label == "device_testing":
+        jump device_testing
