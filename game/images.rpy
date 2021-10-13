@@ -5,9 +5,13 @@
 ## Characters ###################
 #################################
 
+### Temp player name ###
+define p = Character("You")
+
 ### Avery ###
 
 define s = Character("Avery", color="#baffbe")
+define s_unknown = Character("???", color = "baffbe")
 
 image scientist_portrait = im.Scale("characters/scientist/scientist_portrait.png", 100, 100)
 image scientist happy = im.Scale("characters/scientist/scientist0.png", 547, 1080)
@@ -18,7 +22,8 @@ image scientist shocked = im.Scale("characters/scientist/scientist4.png", 547, 1
 
 ### Robot ###
 
-define r = Character("Robot", color="#db9a6e")
+define r = Character("MUS-L", color="#db9a6e")
+define r_unknown = Character("???", color = "db9a6e")
 
 image robot_portrait = im.Scale("characters/robot/robot_portrait.png", 100, 100)
 image robot happy = im.Scale("characters/robot/robot0.png", 547, 1080)
@@ -26,6 +31,13 @@ image robot sad = im.Scale("characters/robot/robot1.png", 547, 1080)
 image robot sad2 = im.Scale("characters/robot/robot2.png", 547, 1080)
 image robot angry = im.Scale("characters/robot/robot3.png", 547, 1080)
 image robot shocked = im.Scale("characters/robot/robot4.png", 547, 1080)
+
+#################################
+## Backgrounds ##################
+#################################
+
+image bg blank = im.Scale("backgrounds/blank.png", 1920, 1080)
+image bg waterfall = im.Scale("backgrounds/waterfall.png", 1920, 1080)
 
 #################################
 ## Menus ########################
