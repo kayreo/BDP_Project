@@ -38,6 +38,7 @@ image robot shocked = im.Scale("characters/robot/robot4.png", 547, 1080)
 
 image bg blank = im.Scale("backgrounds/blank.png", 1920, 1080)
 image bg waterfall = im.Scale("backgrounds/waterfall.png", 1920, 1080)
+image bg thicket = im.Scale("backgrounds/thicket.png", 1920, 1080)
 
 #################################
 ## Menus ########################
@@ -48,5 +49,9 @@ image up_arrow = im.Flip("menus/arrow.png", vertical ="True")
 image down_arrow = "menus/arrow.png"
 image up_arrow_hover = im.Flip("menus/arrow_hover.png", vertical ="True")
 image down_arrow_hover = "menus/arrow_hover.png"
+image right_arrow = im.Flip("menus/arrow2.png", horizontal ="True")
+image left_arrow = "menus/arrow2.png"
+image right_arrow_hover = im.Flip("menus/arrow_hover2.png", horizontal ="True")
+image left_arrow_hover = "menus/arrow_hover2.png"
 image close_button = im.Scale("menus/confirm_button.png", 200, 100)
 image close_button_hover = im.Scale("menus/confirm_button_hover.png", 200, 100)

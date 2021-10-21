@@ -107,6 +107,41 @@ init python:
             self.pin_pos3 = 0
             self.pin_pos4 = 0
 
+            #Thicket puzzle
+            self.thick_bar1 = 0
+            self.thick_bar2 = 0
+            self.thick_bar3 = 0
+
+            #Water source puzzle
+            # GRID POSITIONS
+
+            # X POSITIONS
+            self.x_increment = 0.098
+            self.left = 0.406
+            self.middle = 0.504
+            self.right = 0.602
+
+            # Y POSITONS
+            self.y_increment = 0.187
+            self.top = 0.213
+            self.middle = 0.4
+            self.bottom = 0.587
+     
+            # OBJECTS
+            self.robo_x = 0.406
+            self.robo_y = 0.587
+
+            self.rock1_x = 0.504
+            self.rock1_y = 0.4
+
+            self.rock2_x = 0.504
+            self.rock2_y = 0.213
+
+            self.arrow_dir = "None"
+
+            self.nearest_TEST = self.get_nearest()
+
+
             # General puzzles
             self.num_fails = 0
 
@@ -118,10 +153,78 @@ init python:
         def reset_fails(self):
             self.num_fails = 0
 
+        # Moves robot
+        def move_robo_left(self):
+            if self.robo_x > self.left:
+                self.robo_x -= self.x_increment
+            else:
+                self.left
+
+        def move_robo_right(self):
+            if self.robo_x < self.right:
+                self.robo_x += self.x_increment
+            else:
+                self.right
+
+        def move_robo_up(self):
+            if self.robo_y > self.top:
+                self.robo_y -= self.y_increment
+            else:    
+                self.top
+
+        def move_robo_down(self):
+            if self.robo_y < self.bottom:
+                self.robo_y += self.y_increment
+            else:
+                self.bottom
+
+        def get_nearest(self):
+            if self.arrow_dir == "right" and self.can_move_rock(rock1_x, str(self.right)): 
+                return "rock1"
+            if self.arrow_dir == "left" and self.can_move_rock(rock1_x, str(self.left)): 
+                return "rock1"
+            if self.arrow_dir == "up" and self.can_move_rock(rock1_y, str(self.top)): 
+                return "rock1"
+            if self.arrow_dir == "down" and self.can_move_rock(rock1_y, str(self.bottom)): 
+                return "rock1"
+
+        # Checks if rock can be moved
+        def can_move_rock(self, rock_id, rock_pos):
+            if rock_id != rock_pos:
+                return True
+            else:
+                return False
+
+        # Checks if robot had collided with rock
+        def check_robo_pos(self):
+            robo_x = str(self.robo_x)
+            robo_y = str(self.robo_y)
+
+            rock1_x = str(self.rock1_x)
+            rock1_y = str(self.rock1_y)
+
+            if robo_x == rock1_x and robo_y == rock1_y:
+                if self.arrow_dir == "right" and self.can_move_rock(rock1_x, str(self.right)):
+                    self.rock1_x += self.x_increment
+
+                elif self.arrow_dir == "left" and self.can_move_rock(rock1_x, str(self.left)):
+                    self.rock1_x -= self.x_increment
+
+                elif self.arrow_dir == "up" and self.can_move_rock(rock1_y, str(self.top)):
+                    self.rock1_y -= self.y_increment
+
+                elif self.arrow_dir == "down" and self.can_move_rock(rock1_y, str(self.bottom)):
+                    self.rock1_y += self.y_increment
+            
+
 ## DEBUG ###################
 screen debug:
     text "Debug" xpos 25 ypos 25
     #text "Pin: [pin_pos1] [pin_pos2] [pin_pos3] [pin_pos4]" xpos 25 ypos 75
+    text "Thicket: [puz.thick_bar1] [puz.thick_bar2] [puz.thick_bar3]" xpos 25 ypos 100
+    text "Water Source: [puz.arrow_dir], [puz.nearest_TEST]" xpos 25 ypos 150
+    text "ROBOT: [puz.robo_x] , [puz.robo_y]" xpos 25 ypos 200
+    text "ROCK1: [puz.rock1_x] , [puz.rock1_y]" xpos 25 ypos 250
 
 ## Styles ###################
 # Used for datapad device's headers
@@ -256,10 +359,13 @@ screen item_desc:
                         action Jump("use_item")
 
                     imagebutton:
-                        idle "close_button" xalign 0.25
-                        hover "close_button_hover" 
                         if per.chapter_num != 1:
+                            idle "close_button" xalign 0.25
+                            hover "close_button_hover" 
                             action Hide("item_desc"), Show("datapad")
+                        else:
+                            idle "close_button_hover" xalign 0.25
+                            hover "close_button_hover"
 
     fixed:                      
         xpos 790 ypos 725
@@ -460,3 +566,113 @@ screen password_solution:
         focus_mask True
         idle "menus/back_close.png"
         action Show("datapad_tutorial"), Hide("password_solution", dissolve)
+
+### Chapter 2 Puzzles ###
+
+### Thicket Puzzle ###
+### Activation ###
+screen thicket_activation:
+    imagebutton:
+        xalign 0.94 yalign 0.69
+        focus_mask True
+        idle "puzzles/thicket_scanner.png"
+        hover "puzzles/thicket_scanner_hover.png"
+        action Hide("thicket_activation", transition=dissolve), Show("thicket_controls")
+
+
+### Solution: 444
+screen thicket_controls:
+    add "menus/datapad_back_hori.png" xalign 0.5 yalign 0.5
+    add "menus/thicket_puz_frame.png" xalign 0.5 yalign 0.5
+
+    if puz.thick_bar1 != 4 or puz.thick_bar2 != 4 or puz.thick_bar3 != 4:
+        hbox:
+            xalign 0.5 yalign 0.73
+            spacing 200
+            imagebutton:
+                idle "up_arrow"
+                hover "up_arrow_hover"
+                action SetVariable("puz.thick_bar2", 2), SetVariable("puz.thick_bar3", 4)
+
+            imagebutton:
+                idle "up_arrow"
+                hover "up_arrow_hover"
+                action SetVariable("puz.thick_bar2", 4)
+
+            imagebutton:
+                idle "up_arrow"
+                hover "up_arrow_hover"
+                action SetVariable("puz.thick_bar1", 4), SetVariable("puz.thick_bar3", 3)
+
+    else:
+        vbox:
+            xalign 0.5 yalign 0.22
+            text "{=datapad_body_text}Calibration complete." xalign 0.5
+            text "{=datapad_body_text}Please exit the device." xalign 0.5
+
+        imagebutton:
+            xalign 0.5 yalign 0.755
+            idle "menus/confirm_button.png"
+            hover "menus/confirm_button_hover.png"
+            action Jump("thicket_solved"), Hide("thicket_controls")
+
+        text "{=datapad_text}EXIT" xalign 0.5 yalign 0.74
+
+    python:
+        if puz.thick_bar1 == 4 and puz.thick_bar2 == 4 and puz.thick_bar3 == 4:
+            thicket_icon = "thicket_bar_solved"
+        else:
+            thicket_icon = "thicket_bar"
+        yplace1 = 600
+        yplace2 = 600
+        yplace3 = 600
+    for i in range(puz.thick_bar1):
+        add "puzzles/[thicket_icon].png" xalign 0.35 ypos yplace1
+        $ yplace1 -= 100
+        
+    for i in range(puz.thick_bar2):
+        add "puzzles/[thicket_icon].png" xalign 0.5 ypos yplace2
+        $ yplace2 -= 100
+        
+    for i in range(puz.thick_bar3):
+        add "puzzles/[thicket_icon].png" xalign 0.65 ypos yplace3
+        $ yplace3 -= 100
+
+### Water Source Puzzle ###
+### Solution: 
+screen water_source_controls:
+    add "menus/datapad_back.png" xalign 0.5 yalign 0.5
+    add "menus/source_puz_frame.png" xalign 0.5 yalign 0.5
+    
+    add "puzzles/rock.png" xalign puz.rock1_x yalign puz.rock1_y
+    add "puzzles/rock.png" xalign puz.rock2_x yalign puz.rock2_y
+    add "puzzles/robo.png" xalign puz.robo_x yalign puz.robo_y
+
+    hbox:
+        spacing 200
+        xalign 0.501 yalign 0.8
+        imagebutton:
+            idle "left_arrow"
+            hover "left_arrow_hover"
+            action Function(puz.move_robo_left), SetVariable("puz.arrow_dir", "left"), Function(puz.check_robo_pos)
+        
+        imagebutton:
+            idle "right_arrow"
+            hover "right_arrow_hover"
+            action Function(puz.move_robo_right), SetVariable("puz.arrow_dir", "right"), Function(puz.check_robo_pos)
+
+    vbox:
+        spacing 100
+        xalign 0.5 yalign 0.85
+        imagebutton:
+            idle "up_arrow"
+            hover "up_arrow_hover"
+            action Function(puz.move_robo_up), SetVariable("puz.arrow_dir", "up"), Function(puz.check_robo_pos)
+
+
+        imagebutton:
+            idle "down_arrow"
+            hover "down_arrow_hover"
+            action Function(puz.move_robo_down), SetVariable("puz.arrow_dir", "down"), Function(puz.check_robo_pos)
+
+    
