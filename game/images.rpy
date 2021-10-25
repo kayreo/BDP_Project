@@ -39,6 +39,7 @@ image robot shocked = im.Scale("characters/robot/robot4.png", 547, 1080)
 image bg blank = im.Scale("backgrounds/blank.png", 1920, 1080)
 image bg waterfall = im.Scale("backgrounds/waterfall.png", 1920, 1080)
 image bg thicket = im.Scale("backgrounds/thicket.png", 1920, 1080)
+image bg water_source = im.Scale("backgrounds/watersource.png", 1920, 1080)
 
 #################################
 ## Menus ########################

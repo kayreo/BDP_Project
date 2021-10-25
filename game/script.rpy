@@ -309,7 +309,7 @@ label chap_1_end:
 
     r "Captain, if I may suggest an alternate route?"
     r "This water’s special properties must lead to some sort of source deeper in the area."
-    "MUS-L boops excitedly"
+    "MUS-L boops excitedly."
     r "I also am interested in how this water could be potentially used to better our terraforming process on the surface."
 
     show scientist happy
@@ -337,13 +337,215 @@ label chap_1_end:
 
     show bg blank with dissolve
 
-    "{i}This concludes Chapter 1.{/i}"
     "{i}Would you like to save the game?{/i}"
     menu:
         "Yes":
             call screen save with dissolve
+            jump next_chapter
         "No":
             jump next_chapter
 
+label chap_2_end:
+    scene bg blank with dissolve
+    "{i}This concludes Chapter 2.{/i}"
+    "{i}Would you like to save the game?{/i}"
+    menu:
+        "Yes":
+            call screen save with dissolve
+            return
+        "No":
+            return
+
 label next_chapter:
-    return
+    $ puz = Puzzle_manager()
+    $ inv = Inventory()
+    $ per.chapter_num += 1
+    $ chapter_name = "chapter_" + str(per.chapter_num)
+    $ renpy.jump(chapter_name)
+
+label chapter_2:
+    per.player_name "{i}Where should we go first..?{/i}"
+    $ per.scientist_location = "Waterfall"
+    $ per.robot_location = "Waterfall"
+    #show screen debug
+    #call screen water_source_controls
+    $ first_visit = True
+    scene bg waterfall with dissolve
+    call screen waterfall with dissolve
+
+label thicket_puzzle:
+    show scientist happy with dissolve
+    s "Captain!"
+
+    "Avery hands you one of the scanners."
+
+    s "Could you attach this one to that vine over there?"
+
+    per.player_name "On it."
+
+    s "Thank you, I-"
+    show scientist shocked
+    s "Oh, I almost forgot!"
+    show scientist happy
+    s "You'll need to calibrate the device."
+    s "The air down here is exhibiting some strange abnormalities, so you may need to make some adjustments."
+
+    "Dr. DeWitt gives you a quick, reassuring smile before disappearing behind a clump of vines."
+    hide scientist with dissolve
+    "You bring the scanner to a friendly-looking vine on the right and awkwardly attach it to one of its thicker portions."
+    "With a slight hum, the small device clamps on; tiny beams of grid-patterned light moving up and down the spines of the vines."
+    
+    per.player_name "Now to calibrate it..."
+    call screen thicket_activation with dissolve
+
+label thicket_solved:
+    per.player_name "Got it!"
+
+    show scientist happy with dissolve
+    s "Yes!"
+    s "Okay okay okay, the last of the devices are calibrated now, Captain."
+    s "It’s going to take a while for them to complete a full deconstruction of the plant matter, but after a couple hours or so we should have a molecular breakdown!"
+    s "Now, let’s move on to the large one..."
+    hide scientist with dissolve
+
+    show robot happy with dissolve
+
+    if water_source_visited == False:
+        r "Excuse me, Captain?"
+        r "I believe that now could be a more optimal time to further investigate the unnatural water from earlier."
+        r "If we must wait, it would be a better function of our time to understand more of this location."
+
+    else:
+        r "Captain, I believe we should return to the main cavern."
+        r "These scanners will take some time to fully gather sufficient data."
+        r "If we must wait, it would be a better function of our time to understand more of this location."
+
+    show robot at left with dissolve
+
+    show scientist sad at right with dissolve
+    s "But...we’re so close to uncovering something so incredible!"
+
+    per.player_name "This is certainly an incredible find...but MUS-L is right."
+    show scientist sad2
+    per.player_name "This information is gonna have to wait until we have a better understanding of everything in this place itself."
+
+    "Avery stands dumbfounded at your words; her eyes jump between her probes and devices, the large, collapsed, enveloped, structure, and back to you."
+    "After a few beats of silence, she says..."
+
+    show scientist angry
+    s "If this isn’t still here by the time we get back, then I swear to both of you my research won’t be the only thing that is incomplete! Hmph!"
+    hide scientist with dissolve
+
+    "Avery marches off back down the path you came and through the dense jungle. You and MUS-L stand there in stunned silence."
+
+    show robot at center with dissolve
+    r "The mind of a scientist; it’s a hard thing for her to hold back her instincts."
+    r "I hope she will not terminate me for my previous recommendation."
+
+    if water_source_visited == False:
+        r "I am just...drawn to whatever could be at the source."
+
+    per.player_name "It’s alright. If Avery- Dr. DeWitt should be angry at anyone, it's me."
+    per.player_name "I’m sure she’ll be okay though; she’s a lot harder to crack than she gives herself credit for."
+
+    r "Affirmative!"
+
+    scene bg blank with dissolve
+
+    "MUS-L nods his head as you start our trek back through the wet jungle."
+    "A short walk later, you’re able to meet up with Avery, although she isn’t exactly in the speaking mood."
+    "You continue to go back through the entrance you found and start hiking up through more rocky terrain."
+
+    scene bg waterfall with dissolve
+
+    if water_source_visited == False:
+        jump water_source
+
+    else:
+        jump chap_2_end
+
+label water_source_puzzle:
+    "Now to move those rocks..."
+    hide robot with dissolve
+    call screen water_source_controls with dissolve
+
+label water_source_solved:
+    "MUS-L’s large form strains against the rocks as you prepare to quickly move across the newly opened pathway to the tree."
+    "He lunges upon the rocks with a sharp sound of squeaking metal; the rocks begin to break apart, loosening until they eventually find the flow of water that leads off the cliff face."
+    "The rocks tumble and bob up and down in the water as they eventually slide off the edge of the cliff, crashing into the earth below."
+
+    show scientist happy with dissolve
+    s "Great job MUS-L!"
+    show scientist sad
+    s "Are you okay? No circuits and parts not damaged from the water or anything?"
+    show scientist at right with dissolve
+
+    show robot happy at left with dissolve
+    r "Running diagnostic scan...my systems to appear to be undamaged but something...strange is occurring with a nearby signal that’s close by."
+    r "It’s strong and coming from...there."
+
+    "MUS-L points his large metal hands and turns to face the tree."
+
+    per.player_name "MUS-L, what do you mean a signal? And are you certain that it’s coming from the tree?"
+
+    r "I’m sure Captain; my sensors are reading some sort of frequency and...I feel as if it’s trying to...communica-"
+    hide robot with dissolve
+
+    "MUS-L suddenly jerks his arms up and begins emitting loud noises from his vocal outputs."
+    "He begins to move erratically, lifting himself out of the water and moving quickly across the now cleared path."
+
+    per.player_name "Ah no no no no, Avery we need to stop whatever’s happening right now!"
+
+    show scientist shocked
+    s "Yes Captain!"
+
+    hide robot with dissolve
+    hide scientist with dissolve
+
+    "The two of you hastily restrain MUS-L, although the robot nearly overpowers you."
+    "MUS-L's face pulses and flashes wildly until he slows to a stop."
+
+    show robot happy with dissolve
+    r "I..."
+
+    per.player_name "How are you feeling?"
+
+    r "It seems the worst has passed, although..."
+
+    "MUS-L stares silently into the distance."
+
+    show robot at left with dissolve
+    show scientist sad at right with dissolve
+
+    if thicket_visited == False:
+        s "I-I think we should head back and investigate the thicket."
+        s "There has to be some valuable information in that area."
+        s "Plus, this place is starting to make me uneasy..."
+
+    else:
+        s "I-I think we should head back..."
+        s "This place is starting to make me uneasy..."
+
+    r "But-"
+
+    show scientist angry
+    s "We've looked around enough here!"
+        
+    per.player_name "I think Avery is right."
+    per.player_name "It's not safe for any of us to be around that water until we better analyze it."
+    per.player_name "We'll leave some scanners around and come back later, okay?"
+
+    r "..."
+    r "Alright."
+
+    scene bg blank with dissolve
+
+    "You slowly return the way you had come until you arrive back in the main cavern."
+
+    scene bg waterfall with dissolve
+
+    if thicket_visited == False:
+        jump thicket
+
+    else:
+        jump chap_2_end

@@ -60,10 +60,11 @@ init python:
         def __init__(self):
             # Inventory management
             self.held_item = None
-            self.item_list = ["activation code", "old key"]
+            self.item_list = ["activation code", "old key", "MUS-L's hand"]
 
             self.datapad_interactable = True
             self.datapad_unlocked = False
+            self.datapad_opened = False
 
         ## Functions ####################
         # Allows the player to use the datapad
@@ -95,6 +96,9 @@ init python:
                 return "This item is for testing."
             if self.held_item == "activation code":
                 return "This is the passcode to your datapad. Probably best to keep it somewhere safe..."
+
+            if self.held_item == "MUS-L's hand":
+                return "One of MUS-L's many hand attachments. Its installation is thankfully simple."
             else:
                 return "No item description found."
 
@@ -118,28 +122,31 @@ init python:
             # X POSITIONS
             self.x_increment = 0.098
             self.left = 0.406
-            self.middle = 0.504
+            self.middle_x = 0.504
             self.right = 0.602
 
             # Y POSITONS
             self.y_increment = 0.187
             self.top = 0.213
-            self.middle = 0.4
+            self.middle_y = 0.4
             self.bottom = 0.587
      
             # OBJECTS
-            self.robo_x = 0.406
-            self.robo_y = 0.587
+            self.robo_x = self.left
+            self.robo_y = self.bottom
 
-            self.rock1_x = 0.504
-            self.rock1_y = 0.4
+            self.rock1_x = self.left
+            self.rock1_y = self.middle_y
 
-            self.rock2_x = 0.504
-            self.rock2_y = 0.213
+            self.rock2_x = self.right
+            self.rock2_y = self.bottom
+
+            self.rock3_x = self.middle_x
+            self.rock3_y = self.middle_y
 
             self.arrow_dir = "None"
 
-            self.nearest_TEST = self.get_nearest()
+            self.nearest_rock = "None"
 
 
             # General puzzles
@@ -153,40 +160,124 @@ init python:
         def reset_fails(self):
             self.num_fails = 0
 
-        # Moves robot
-        def move_robo_left(self):
-            if self.robo_x > self.left:
-                self.robo_x -= self.x_increment
+        # Gets rock x position
+        def get_rock_x(self, rock_id):
+            if rock_id == "rock1":
+                return self.rock1_x
+            elif rock_id == "rock2":
+                return self.rock2_x          
+            elif rock_id == "rock3":
+                return self.rock3_x
             else:
-                self.left
+                return "None"
 
-        def move_robo_right(self):
-            if self.robo_x < self.right:
-                self.robo_x += self.x_increment
+        # Gets rock y position
+        def get_rock_y(self, rock_id):
+            if rock_id == "rock1":
+                return self.rock1_y
+            elif rock_id == "rock2":
+                return self.rock2_y
+            elif rock_id == "rock3":
+                return self.rock3_y
             else:
-                self.right
+                return "None"
 
-        def move_robo_up(self):
-            if self.robo_y > self.top:
-                self.robo_y -= self.y_increment
-            else:    
-                self.top
+        def get_rock_x_dist(self, rock_id):
+            if rock_id == "rock1":
+                return str(abs(self.robo_x - self.rock1_x))
+                
+            elif rock_id == "rock2":
+                return str(abs(self.robo_x - self.rock2_x))
+                       
+            elif rock_id == "rock3":
+                return str(abs(self.robo_x - self.rock3_x))
+                
+        def get_rock_y_dist(self, rock_id):
+            if rock_id == "rock1":
+                return str(abs(self.robo_y - self.rock1_y))   
+                
+            elif rock_id == "rock2":
+                return str(abs(self.robo_y - self.rock2_y))
+                
+            elif rock_id == "rock3":
+                return str(abs(self.robo_y - self.rock3_y))
 
-        def move_robo_down(self):
-            if self.robo_y < self.bottom:
-                self.robo_y += self.y_increment
-            else:
-                self.bottom
-
+        # Gets nearest rock to robot
         def get_nearest(self):
-            if self.arrow_dir == "right" and self.can_move_rock(rock1_x, str(self.right)): 
-                return "rock1"
-            if self.arrow_dir == "left" and self.can_move_rock(rock1_x, str(self.left)): 
-                return "rock1"
-            if self.arrow_dir == "up" and self.can_move_rock(rock1_y, str(self.top)): 
-                return "rock1"
-            if self.arrow_dir == "down" and self.can_move_rock(rock1_y, str(self.bottom)): 
-                return "rock1"
+            for i in range(3):
+                rock = "rock" + str(i)
+                check_pos1 = self.get_rock_x_dist(rock)
+                check_pos2 = self.get_rock_y_dist(rock)
+                if check_pos1 == str(self.x_increment) and str(self.robo_y) == str(self.rock1_y) or check_pos2 == str(self.y_increment) and str(self.robo_x) == str(self.rock1_x):
+                    self.nearest_rock = "rock1"
+                    return
+
+                elif check_pos1 == str(self.x_increment) and str(self.robo_y) == str(self.rock2_y) or check_pos2 == str(self.y_increment) and str(self.robo_x) == str(self.rock2_x):
+                    self.nearest_rock = "rock2"
+                    return
+
+                elif check_pos1 == str(self.x_increment) and str(self.robo_y) == str(self.rock3_y) or check_pos2 == str(self.y_increment) and str(self.robo_x) == str(self.rock3_x):
+                    self.nearest_rock = "rock3"
+                    return
+
+            else:
+                self.nearest_rock = "None"
+
+        # Moves robot left
+        def move_robo_left(self):
+            if self.nearest_rock != "None":
+                rock_x = str(self.get_rock_x(self.nearest_rock))
+                if self.robo_x > self.left and self.can_move_rock(rock_x, str(self.left)):
+                    self.robo_x -= self.x_increment
+                else:
+                    return         
+            else:
+                if self.robo_x > self.left:
+                    self.robo_x -= self.x_increment
+                else:
+                    return
+
+        # Moves robot right
+        def move_robo_right(self):
+            if self.nearest_rock != "None":
+                rock_x = str(self.get_rock_x(self.nearest_rock))
+                if self.robo_x < self.right and self.can_move_rock(rock_x, str(self.right)):
+                    self.robo_x += self.x_increment
+                else:
+                    return       
+            else:    
+                if self.robo_x < self.right:
+                    self.robo_x += self.x_increment
+                else:
+                    return
+
+        # Moves robot up
+        def move_robo_up(self):
+            if self.nearest_rock != "None":
+                rock_y = str(self.get_rock_y(self.nearest_rock))
+                if self.robo_y > self.top and self.can_move_rock(rock_y, str(self.top)):
+                    self.robo_y -= self.y_increment
+                else:    
+                    return
+            else:
+                if self.robo_y > self.top:
+                    self.robo_y -= self.y_increment
+                else:
+                    return
+
+        # Moves robot down
+        def move_robo_down(self):
+            if self.nearest_rock != "None":
+                rock_y = str(self.get_rock_y(self.nearest_rock))
+                if self.robo_y < self.bottom and self.can_move_rock(rock_y, str(self.bottom)):
+                    self.robo_y += self.y_increment
+                else:
+                    return
+            else:
+                if self.robo_y < self.bottom:
+                    self.robo_y += self.y_increment
+                else:
+                    return
 
         # Checks if rock can be moved
         def can_move_rock(self, rock_id, rock_pos):
@@ -202,6 +293,10 @@ init python:
 
             rock1_x = str(self.rock1_x)
             rock1_y = str(self.rock1_y)
+            rock2_x = str(self.rock2_x)
+            rock2_y = str(self.rock2_y)
+            rock3_x = str(self.rock3_x)
+            rock3_y = str(self.rock3_y)
 
             if robo_x == rock1_x and robo_y == rock1_y:
                 if self.arrow_dir == "right" and self.can_move_rock(rock1_x, str(self.right)):
@@ -215,6 +310,32 @@ init python:
 
                 elif self.arrow_dir == "down" and self.can_move_rock(rock1_y, str(self.bottom)):
                     self.rock1_y += self.y_increment
+
+            elif robo_x == rock2_x and robo_y == rock2_y:
+                if self.arrow_dir == "right" and self.can_move_rock(rock2_x, str(self.right)):
+                    self.rock2_x += self.x_increment
+
+                elif self.arrow_dir == "left" and self.can_move_rock(rock2_x, str(self.left)):
+                    self.rock2_x -= self.x_increment
+
+                elif self.arrow_dir == "up" and self.can_move_rock(rock2_y, str(self.top)):
+                    self.rock2_y -= self.y_increment
+
+                elif self.arrow_dir == "down" and self.can_move_rock(rock2_y, str(self.bottom)):
+                    self.rock2_y += self.y_increment
+
+            elif robo_x == rock3_x and robo_y == rock3_y:
+                if self.arrow_dir == "right" and self.can_move_rock(rock3_x, str(self.right)):
+                    self.rock3_x += self.x_increment
+
+                elif self.arrow_dir == "left" and self.can_move_rock(rock3_x, str(self.left)):
+                    self.rock3_x -= self.x_increment
+
+                elif self.arrow_dir == "up" and self.can_move_rock(rock3_y, str(self.top)):
+                    self.rock3_y -= self.y_increment
+
+                elif self.arrow_dir == "down" and self.can_move_rock(rock3_y, str(self.bottom)):
+                    self.rock3_y += self.y_increment
             
 
 ## DEBUG ###################
@@ -222,9 +343,18 @@ screen debug:
     text "Debug" xpos 25 ypos 25
     #text "Pin: [pin_pos1] [pin_pos2] [pin_pos3] [pin_pos4]" xpos 25 ypos 75
     text "Thicket: [puz.thick_bar1] [puz.thick_bar2] [puz.thick_bar3]" xpos 25 ypos 100
-    text "Water Source: [puz.arrow_dir], [puz.nearest_TEST]" xpos 25 ypos 150
+    python: 
+        booltest = False
+        if puz.nearest_rock == "rock1" or puz.nearest_rock == "rock2" or puz.nearest_rock == "rock3":
+            booltest = True
+
+        rock = "rock" + "1"
+        check_pos1 = puz.get_rock_x_dist(rock)
+        check_pos2 = puz.get_rock_y_dist(rock)
+    text "Water Source: [puz.arrow_dir], [puz.nearest_rock] [booltest]" xpos 25 ypos 150
     text "ROBOT: [puz.robo_x] , [puz.robo_y]" xpos 25 ypos 200
     text "ROCK1: [puz.rock1_x] , [puz.rock1_y]" xpos 25 ypos 250
+    text "[rock] [check_pos1] [check_pos2]" xpos 25 ypos 300
 
 ## Styles ###################
 # Used for datapad device's headers
@@ -258,7 +388,10 @@ screen datapad:
         imagebutton:
             focus_mask True
             idle "menus/datapad_back_close.png"
-            action Hide("datapad"), Jump("location_manager")
+            if per.chapter_num == 2 and per.player_location == "Water Source":
+                action SetVariable("inv.datapad_opened", False), Show("water_source2"), Hide("datapad")
+            else:
+                action SetVariable("inv.datapad_opened", False), Hide("datapad")
 
     # displays item, if one is equipped
     if inv.held_item != None:
@@ -281,7 +414,7 @@ screen datapad:
                 add "menus/item_frame.png" xalign 0.4 yalign 0.3
             vbox:
                 text "{=datapad_text}> Current item:"
-                text "{=datapad_body_text}[held_item]" xalign 0.5
+                text "{=datapad_body_text}[inv.held_item]" xalign 0.5
 
         # vbox for player location info
         vbox:
@@ -315,7 +448,10 @@ screen datapad:
             imagebutton:
                 idle "close_button"
                 hover "close_button_hover"
-                action Hide("datapad"), Jump("location_manager")
+                if per.chapter_num == 2 and per.player_location == "Water Source":
+                    action SetVariable("inv.datapad_opened", False), Show("water_source2"), Hide("datapad")
+                else:
+                    action SetVariable("inv.datapad_opened", False), Hide("datapad")
          
             text "{=datapad_text}CLOSE" xalign 0.017 yalign 0.027
 
@@ -330,7 +466,7 @@ screen item_desc:
         imagebutton:
             focus_mask True
             idle "menus/datapad_back_close.png"
-            action Hide("item_desc"), Jump("location_manager")
+            action SetVariable("inv.datapad_opened", False), Hide("datapad")
 
     # vbox for item info
     add "items/[inv.held_item].png" xalign 0.5 yalign 0.165
@@ -390,6 +526,21 @@ label use_item:
         name "It's probably not a good idea to just have this lying around somewhere..."
         "You stuff the crumpled up note into your pocket."
         jump chap_1_end
+
+    elif inv.held_item == "MUS-L's hand":
+        show robot happy with dissolve
+        
+        "You remove MUS-L's drill attachments and slip his hands into the sockets."
+
+        r "Thank you, Captain."
+        
+        jump water_source_puzzle
+
+screen open_datapad:
+    imagebutton:
+        idle "menus/expand.png"
+        hover "menus/expand_highlight.png"
+        action Hide("open_datapad"), Show("datapad")
 
 
 # The tutorial version of the datapad device, only used in Chapter 1
@@ -579,6 +730,12 @@ screen thicket_activation:
         hover "puzzles/thicket_scanner_hover.png"
         action Hide("thicket_activation", transition=dissolve), Show("thicket_controls")
 
+    if not inv.datapad_opened:
+        imagebutton:
+            xalign 0.5 yalign 0.97
+            idle "menus/expand.png"
+            hover "menus/expand_highlight.png"
+            action SetVariable("inv.datapad_opened", True), Show("datapad")
 
 ### Solution: 444
 screen thicket_controls:
@@ -614,7 +771,7 @@ screen thicket_controls:
             xalign 0.5 yalign 0.755
             idle "menus/confirm_button.png"
             hover "menus/confirm_button_hover.png"
-            action Jump("thicket_solved"), Hide("thicket_controls")
+            action Hide("thicket_controls"), Jump("thicket_solved")
 
         text "{=datapad_text}EXIT" xalign 0.5 yalign 0.74
 
@@ -646,33 +803,49 @@ screen water_source_controls:
     
     add "puzzles/rock.png" xalign puz.rock1_x yalign puz.rock1_y
     add "puzzles/rock.png" xalign puz.rock2_x yalign puz.rock2_y
+    add "puzzles/rock.png" xalign puz.rock3_x yalign puz.rock3_y
     add "puzzles/robo.png" xalign puz.robo_x yalign puz.robo_y
 
-    hbox:
-        spacing 200
-        xalign 0.501 yalign 0.8
-        imagebutton:
-            idle "left_arrow"
-            hover "left_arrow_hover"
-            action Function(puz.move_robo_left), SetVariable("puz.arrow_dir", "left"), Function(puz.check_robo_pos)
+    if str(puz.robo_y) != str(puz.top) or str(puz.robo_x) != str(puz.middle_x):
+        hbox:
+            spacing 200
+            xalign 0.501 yalign 0.8
+            imagebutton:
+                idle "left_arrow"
+                hover "left_arrow_hover"
+                action Function(puz.move_robo_left), SetVariable("puz.arrow_dir", "left"), Function(puz.get_nearest), Function(puz.check_robo_pos), Function(puz.get_nearest),
         
-        imagebutton:
-            idle "right_arrow"
-            hover "right_arrow_hover"
-            action Function(puz.move_robo_right), SetVariable("puz.arrow_dir", "right"), Function(puz.check_robo_pos)
+            imagebutton:
+                idle "right_arrow"
+                hover "right_arrow_hover"
+                action Function(puz.move_robo_right), SetVariable("puz.arrow_dir", "right"), Function(puz.get_nearest), Function(puz.check_robo_pos), Function(puz.get_nearest),
 
-    vbox:
-        spacing 100
-        xalign 0.5 yalign 0.85
-        imagebutton:
-            idle "up_arrow"
-            hover "up_arrow_hover"
-            action Function(puz.move_robo_up), SetVariable("puz.arrow_dir", "up"), Function(puz.check_robo_pos)
+        vbox:
+            spacing 100
+            xalign 0.5 yalign 0.85
+            imagebutton:
+                idle "up_arrow"
+                hover "up_arrow_hover"
+                action Function(puz.move_robo_up), SetVariable("puz.arrow_dir", "up"), Function(puz.get_nearest), Function(puz.check_robo_pos), Function(puz.get_nearest),
 
 
-        imagebutton:
-            idle "down_arrow"
-            hover "down_arrow_hover"
-            action Function(puz.move_robo_down), SetVariable("puz.arrow_dir", "down"), Function(puz.check_robo_pos)
+            imagebutton:
+                idle "down_arrow"
+                hover "down_arrow_hover"
+                action Function(puz.move_robo_down), SetVariable("puz.arrow_dir", "down"), Function(puz.get_nearest), Function(puz.check_robo_pos), Function(puz.get_nearest),
 
-    
+    else:
+        vbox:
+            xalign 0.5 yalign 0.83
+            spacing 20
+            vbox:
+                xalign 0.5
+                text "{=datapad_body_text}Path cleared." xalign 0.5
+                text "{=datapad_body_text}Please exit the device." xalign 0.5
+            imagebutton:
+                xalign 0.5 yalign 0.9
+                idle "menus/confirm_button.png"
+                hover "menus/confirm_button_hover.png"
+                action Jump("water_source_solved"), Hide("water_source_controls")
+
+        text "{=datapad_text}EXIT" xalign 0.5 yalign 0.83
