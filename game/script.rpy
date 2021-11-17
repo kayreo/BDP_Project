@@ -4,8 +4,53 @@
 label start:
     $ inv = Inventory()
     $ puz = Puzzle_manager()
+    "Welcome!"
+    "Please select which chapter you would like to start on."
+    menu:
+        "Chapter 1":
+            jump chapter_1
+
+        "Chapter 2":
+            "Before you begin chapter 2, please enter your name."
+            python:
+                name = renpy.input("Please enter your name", length=10)
+                name = name.strip()
+                name = name.capitalize()      
+                if not name:
+                    name = "No name"
+            $ per = Personnel(name)
+            $ per.chapter_num = 2
+            "Is [name] correct?"
+            menu:
+                "Yes":
+                    jump chapter_2
+                "No":
+                    jump start
+
+        "Chapter 3":
+            "Before you begin chapter 3, please enter your name."
+            python:
+                name = renpy.input("Please enter your name", length=10)
+                name = name.strip()
+                name = name.capitalize()      
+                if not name:
+                    name = "No name"
+            $ per = Personnel(name)
+            $ per.chapter_num = 3
+            "Is [name] correct?"
+            menu:
+                "Yes":
+                    jump chapter_3
+                "No":
+                    jump start
+
+label chapter_1:
+    $ inv = Inventory()
+    $ puz = Puzzle_manager()
     scene bg blank
     
+    play sound "audio/Construction.wav"
+
     "(wrrrrr) (wrrrr) (wrrrr)"
 
     "The sounds of rocks break and chip against a large metal drill, dropping somewhere into the pool of darkness below."
@@ -13,8 +58,12 @@ label start:
     "A warm and sweet breeze blows lightly against the figures. The air feels humid and damp."
     "The silhouetted individual in the front leans further out into the dark, searching for any sign of light."
     "They lean even further before saying something to their companions."
+    
+    stop sound fadeout 2.0
+
     "As they turn, they lose their footing, slipping down onto the rocks and quickly falling, falling, falling, until!"
 
+    play sound "audio/Splash.wav"
     "(SPLASH)"
 
     s_unknown "Captain!"
@@ -115,6 +164,7 @@ label start:
     "The datapad screen pulls up asking for its passcode." 
     "You look fondly at the chips and dents in its casing. A great deal of use has gone into using this pad ever since it was given to you."
 
+    $ puz.puz_tag = "Tutorial"
     call screen datapad_tutorial
 
 label first_password_fail:
@@ -176,8 +226,9 @@ label first_password_fail:
 
     p "Maybe it's this...?"
 
-    "{i}In the game, there are certain items you will be able to take a closer look at.{/i}"
-    "{i}Click on the note to enlarge it.{/i}"
+    "{i}In the game, there are certain items you will be able to interact with.{/i}"
+    "{i}If you ever get stuck during a puzzle, you can click on a help button that will appear in the upper left corner.{/i}"
+    "{i}To continue, click on the note to enlarge it.{/i}"
 
     call screen click_password
 
@@ -325,12 +376,6 @@ label chap_1_end:
 
     show scientist sad
     s "It was certainly an... attempt MUS-L."
-
-    show scientist happy
-
-    per.player_name "{i}Hmm, a potential water source, or a stronger and more localized area of the vegetation...{/i}"
-    per.player_name "{i}We’ll most likely be able to get to both as long as nothing goes wrong, but which direction would be best to start..?{/i}"
-
     hide scientist with dissolve
 
     hide robot with dissolve
@@ -347,33 +392,39 @@ label chap_1_end:
 
 label chap_2_end:
     scene bg blank with dissolve
-    "{i}This concludes Chapter 2.{/i}"
     "{i}Would you like to save the game?{/i}"
     menu:
         "Yes":
             call screen save with dissolve
-            return
+            jump next_chapter
         "No":
-            return
+            jump next_chapter
 
 label next_chapter:
-    $ puz = Puzzle_manager()
-    $ inv = Inventory()
-    $ per.chapter_num += 1
-    $ chapter_name = "chapter_" + str(per.chapter_num)
-    $ renpy.jump(chapter_name)
+    python:
+        puz = Puzzle_manager()
+        inv = Inventory()
+        per.chapter_num += 1
+        first_visit = True
+        thicket_visited = False
+        water_source_visited = False
+        chapter_name = "chapter_" + str(per.chapter_num)
+        puz.reset_tag()
+        per.player_location = "Waterfall"
+        per.scientist_location = "Waterfall"
+        per.robot_location = "Waterfall"
+        renpy.jump(chapter_name)
 
 label chapter_2:
-    per.player_name "{i}Where should we go first..?{/i}"
-    $ per.scientist_location = "Waterfall"
-    $ per.robot_location = "Waterfall"
-    #show screen debug
-    #call screen water_source_controls
+    per.player_name "{i}Hmm, a potential water source, or a stronger and more localized area of the vegetation...{/i}"
+    per.player_name "{i}Or, in simpler terms, left or right.{/i}"
+    per.player_name "{i}We’ll most likely be able to get to both as long as nothing goes wrong, but which direction would be best to start..?{/i}"
+    $ per.player_location == "waterfall"
     $ first_visit = True
-    scene bg waterfall with dissolve
-    call screen waterfall with dissolve
+    jump location_manager
 
 label thicket_puzzle:
+    $ puz.puz_tag = "Thicket1"
     show scientist happy with dissolve
     s "Captain!"
 
@@ -410,7 +461,7 @@ label thicket_solved:
 
     show robot happy with dissolve
 
-    if water_source_visited == False:
+    if not water_source_visited:
         r "Excuse me, Captain?"
         r "I believe that now could be a more optimal time to further investigate the unnatural water from earlier."
         r "If we must wait, it would be a better function of our time to understand more of this location."
@@ -442,7 +493,7 @@ label thicket_solved:
     r "The mind of a scientist; it’s a hard thing for her to hold back her instincts."
     r "I hope she will not terminate me for my previous recommendation."
 
-    if water_source_visited == False:
+    if not water_source_visited:
         r "I am just...drawn to whatever could be at the source."
 
     per.player_name "It’s alright. If Avery- Dr. DeWitt should be angry at anyone, it's me."
@@ -458,13 +509,15 @@ label thicket_solved:
 
     scene bg waterfall with dissolve
 
-    if water_source_visited == False:
+    if not water_source_visited:
+        per.player_name "Now that that's out of the way, we should go check out the source of that water..."
         jump water_source
 
     else:
         jump chap_2_end
 
 label water_source_puzzle:
+    $ puz.puz_tag = "Water1"
     "Now to move those rocks..."
     hide robot with dissolve
     call screen water_source_controls with dissolve
@@ -502,29 +555,68 @@ label water_source_solved:
     hide robot with dissolve
     hide scientist with dissolve
 
-    "The two of you hastily restrain MUS-L, although the robot nearly overpowers you."
-    "MUS-L's face pulses and flashes wildly until he slows to a stop."
+    "You race past the rocky waters; understanding that whatever has happened to MUS-L could endanger not only himself but also risk your chances of all of you getting out of here alive and safe."
+    "Climbing on the rocky path, you follow after MUS-L as he rolls ahead of you."
+    "Before you’re able to catch up, MUS-L’s arms dig into the mound of dirt and roots and start climbing up, digging his claws into the earth as he starts moving upward."
 
     show robot happy with dissolve
-    r "I..."
+    r "Captain, this signal...I do not understand it’s capability to direct me."
+    r "All I...feel is that I must go further towards this tree."
+    hide robot with dissolve
 
-    per.player_name "How are you feeling?"
+    "He climbs higher and higher before reaching the top just as you reach the base of the mound of roots and dirt."
 
-    r "It seems the worst has passed, although..."
+    show scientist shocked with dissolve
+    s "Captain, I’ll give you a boost. Just catch up with him and hurry!"
+    hide scientist with dissolve
 
-    "MUS-L stares silently into the distance."
+    "With the help of Dr.DeWitt, you grip the earth and with a running leap heave your body onto the massive structure the tree sits on."
+    "Standing there, the tree is even more massive and imposing up close; the massive holes where water pours out on all sides pumping the shining fluorescent liquid down the rocks and off the cliff's edge."
+    "Looking straight ahead, MUS-L stands still in front of the largest hole. By his feet the roots are slowly swirling and rising around him."
 
-    show robot at left with dissolve
-    show scientist sad at right with dissolve
+    per.player_name "MUS-L, look out!"
 
-    if thicket_visited == False:
-        s "I-I think we should head back and investigate the thicket."
-        s "There has to be some valuable information in that area."
-        s "Plus, this place is starting to make me uneasy..."
+    "You run towards your metal companion."
+    "As you wrap your arms around him and pull away, the roots start to snake towards your feet before stopping just on the edge of the mound of rocks, dirt, and roots you stand on."
 
-    else:
-        s "I-I think we should head back..."
-        s "This place is starting to make me uneasy..."
+    per.player_name "MUS-L!"
+    
+    "You shake him; his central light flashing over his head."
+    "Screens read out error codes as you attempt to understand what happened to him."
+    "The error codes all flash off and the still metal husk of MUS-L for a moment locks in place..."
+    "Suddenly, central eye flashes once more with a familiar yellow-blue light."
+
+    show robot happy with dissolve
+    r "Captain...I do not understand what has just transpired."
+    r "Is everything functioning normally?"
+
+    "A sigh of relief passes from your lips."
+
+    per.player_name "MUS-L, we need to talk right now."
+    per.player_name "Come on down; Avery is probably worried sick about us."
+
+    hide robot with dissolve
+
+    show scientist angry with dissolve
+    s "You’re damn right I am! What the hell happened to you MUS-L?"
+    hide scientist with dissolve
+
+    "As you climb down, MUS-L explains how his vision went dark after pushing the rocks, how he saw the colossal tree reach out to him through its roots, and the images that he saw while frozen."
+
+    show robot happy at left with dissolve
+    r "The only logical summary I can surmise from this encounter is that the forest was attempting to communicate somehow."
+    r "I do not understand it’s reasoning; but in line with company policy in possible engagement of alien life forms with intelligence we must first ascertain its level of danger through further contact."
+
+    show scientist angry at right with dissolve
+    s "Woah, woah, woah. Forget the company for a second MUS-L; you almost lost yourself trying to investigate this tree and now you wanna go {i}back{/i}?"
+    show scientist sad
+    if not thicket_visited:
+        s "We still need to find out about the ruins back in the denser areas of the tree."
+    s "Captain, what MUS-L is saying is important, but the fact that more lifeforms could have been here {i}and{/i} now knowing what this forest is capable of is more than enough reason to go back and focus on what we’ve found."
+    if thicket_visited:
+        s "My devices in the thicket finished up a little while ago so we’re clear to go back now."
+    show scientist sad2
+    s "Please..."
 
     r "But-"
 
@@ -544,8 +636,33 @@ label water_source_solved:
 
     scene bg waterfall with dissolve
 
-    if thicket_visited == False:
+    if not thicket_visited:
+        per.player_name "And now to investigate the thicket..."
         jump thicket
 
     else:
         jump chap_2_end
+
+label chapter_3:
+    "As you return to the main cavern, the air is thick with tension."
+    "Both Avery and MUS-L seem lost in their own worlds. You catch the two of them restlessly glancing at each other."
+
+    per.player_name "{i}Avery's devices in the thicket should be nearly done calibrating by now, but MUS-L still needs to go back to the water source for more analysis..."
+    per.player_name "{i}Which should I direct us to first..?{/i}"
+
+    "{i}Please note that Chapter 3 is currently a work in progress.{/i}"
+    "{i}At the moment, the only option available to you is to first investigate the water source.{/i}"
+    "{i}Choosing to visit thicket first will be added in the next deliverable.{/i}"
+
+    jump location_manager
+
+label chap_3_end:
+    scene bg blank with dissolve
+    "{i}This concludes the first half of Chapter 3.{/i}"
+    "{i}Would you like to save the game?{/i}"
+    menu:
+        "Yes":
+            call screen save with dissolve
+            return
+        "No":
+            return

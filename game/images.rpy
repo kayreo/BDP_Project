@@ -20,7 +20,13 @@ image scientist sad2 = im.Scale("characters/scientist/scientist2.png", 547, 1080
 image scientist angry = im.Scale("characters/scientist/scientist3.png", 547, 1080)
 image scientist shocked = im.Scale("characters/scientist/scientist4.png", 547, 1080)
 
-### Robot ###
+image scientist happyB = im.Scale("characters/scientist/scientistB0.png", 547, 1080)
+image scientist sadB = im.Scale("characters/scientist/scientistB1.png", 547, 1080)
+image scientist sad2B = im.Scale("characters/scientist/scientistB2.png", 547, 1080)
+image scientist angryB = im.Scale("characters/scientist/scientistB3.png", 547, 1080)
+image scientist shockedB = im.Scale("characters/scientist/scientistB4.png", 547, 1080)
+
+### MUS-L ###
 
 define r = Character("MUS-L", color="#db9a6e")
 define r_unknown = Character("???", color = "db9a6e")
@@ -31,6 +37,8 @@ image robot sad = im.Scale("characters/robot/robot1.png", 547, 1080)
 image robot sad2 = im.Scale("characters/robot/robot2.png", 547, 1080)
 image robot angry = im.Scale("characters/robot/robot3.png", 547, 1080)
 image robot shocked = im.Scale("characters/robot/robot4.png", 547, 1080)
+
+image robot happyB = im.Scale("characters/robot/robotB0.png", 547, 1080)
 
 #################################
 ## Backgrounds ##################
@@ -56,3 +64,7 @@ image right_arrow_hover = im.Flip("menus/arrow_hover2.png", horizontal ="True")
 image left_arrow_hover = "menus/arrow_hover2.png"
 image close_button = im.Scale("menus/confirm_button.png", 200, 100)
 image close_button_hover = im.Scale("menus/confirm_button_hover.png", 200, 100)
+image reset_button = im.Scale("menus/confirm_button.png", 150, 75)
+image reset_button_hover = im.Scale("menus/confirm_button_hover.png", 150, 75)
+image help_button = im.Scale("menus/help.png", 150, 150)
+image help_button_hover = im.Scale("menus/help_hover.png", 150, 150)

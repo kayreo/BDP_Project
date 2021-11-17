@@ -97,14 +97,20 @@ init python:
             if self.held_item == "activation code":
                 return "This is the passcode to your datapad. Probably best to keep it somewhere safe..."
 
+            if self.held_item == "Avery's arm":
+                return "Avery's robotic replacement arm, now fully assembled. Better get this to her quick!"
+
             if self.held_item == "MUS-L's hand":
                 return "One of MUS-L's many hand attachments. Its installation is thankfully simple."
+
             else:
                 return "No item description found."
 
     ### Puzzles ###
     class Puzzle_manager:
         def __init__(self):
+            self.puz_tag = None
+
             # Tutorial puzzle
             self.pin_pos1 = 0
             self.pin_pos2 = 0
@@ -148,6 +154,15 @@ init python:
 
             self.nearest_rock = "None"
 
+            # Arm puzzle
+            self.got_arm_1 = False
+            self.got_arm_2 = False
+            self.got_arm_3 = False
+            self.built_arm = False
+
+            # Sound puzzle
+            self.correct_code = "12345"
+            self.code_entry = ""
 
             # General puzzles
             self.num_fails = 0
@@ -159,6 +174,34 @@ init python:
         # Reset number of failures after solving puzzle
         def reset_fails(self):
             self.num_fails = 0
+
+        # Resets the puzzle tag once puzzle is complete
+        def reset_tag(self):
+            self.puz_tag = None
+
+        # Checks if arm is completed
+        def check_arm_progress(self):
+            if self.got_arm_1 == True and self.got_arm_2 == True and self.got_arm_3 == True:
+                self.built_arm = True
+                inv.held_item = "Avery's arm"
+
+        # Reset rock positions
+        def reset_rock(self):
+            self.robo_x = self.left
+            self.robo_y = self.bottom
+
+            self.rock1_x = self.left
+            self.rock1_y = self.middle_y
+
+            self.rock2_x = self.right
+            self.rock2_y = self.bottom
+
+            self.rock3_x = self.middle_x
+            self.rock3_y = self.middle_y
+
+            self.arrow_dir = "None"
+
+            self.nearest_rock = "None"
 
         # Gets rock x position
         def get_rock_x(self, rock_id):
@@ -383,7 +426,7 @@ screen datapad:
     if inv.datapad_interactable:
         modal True
 
-        # closes screen
+    # closes screen
     if per.chapter_num != 1:
         imagebutton:
             focus_mask True
@@ -397,6 +440,18 @@ screen datapad:
     if inv.held_item != None:
         $ held_item = inv.held_item.capitalize()
         add "items/[inv.held_item].png" xalign 0.377 yalign 0.155
+
+    if puz.built_arm == False and puz.got_arm_3 == True:
+        add "puzzles/arm_3.png" xalign 0.377 yalign 0.155
+        $ puz.check_arm_progress()
+
+    if puz.built_arm == False and puz.got_arm_2 == True:
+        add "puzzles/arm_2.png" xalign 0.377 yalign 0.155
+        $ puz.check_arm_progress()
+
+    if puz.built_arm == False and puz.got_arm_1 == True:
+        add "puzzles/arm_1.png" xalign 0.377 yalign 0.155
+        $ puz.check_arm_progress()
 
     # vbox for main screen
     vbox:
@@ -466,7 +521,7 @@ screen item_desc:
         imagebutton:
             focus_mask True
             idle "menus/datapad_back_close.png"
-            action SetVariable("inv.datapad_opened", False), Hide("datapad")
+            action SetVariable("inv.datapad_opened", False), Hide("item_desc")
 
     # vbox for item info
     add "items/[inv.held_item].png" xalign 0.5 yalign 0.165
@@ -536,6 +591,27 @@ label use_item:
         
         jump water_source_puzzle
 
+    elif inv.held_item == "Avery's arm":
+        "You hurriedly attach Avery's new arm."
+        "The haphazardly constructed appendage miraculously begins to integrate with Avery. Her new fingers begin to twitch."
+        "You breathe a sigh of relief as Avery slowly regains consciousness."
+
+        s "..."
+        s "..."
+        show scientist sad2B with dissolve
+        s "What...what happened?"
+
+        per.player_name "Oh, thank goodness!"
+        per.player_name "There was an accident; you got injured..."
+
+        s "..."
+
+        per.player_name "..."
+        per.player_name "Let's try to get some rest for now."
+
+        jump chap_3_end
+
+
 screen open_datapad:
     imagebutton:
         idle "menus/expand.png"
@@ -546,11 +622,6 @@ screen open_datapad:
 # The tutorial version of the datapad device, only used in Chapter 1
 screen datapad_tutorial:
     modal True
-
-    imagebutton:
-        focus_mask True
-        idle "menus/datapad_back_close.png"
-        action Hide("datapad_tutorial")
     
     if inv.datapad_unlocked:
         add "menus/datapad_back.png" xalign 0.5 yalign 0.5
@@ -697,6 +768,14 @@ screen password:
 # Click to reveal solution password
 screen click_password:
     modal True
+
+    imagebutton:
+        focus_mask True
+        xalign 0.01 yalign 0.01
+        idle "help_button"
+        hover "help_button_hover"
+        action Show("help_window")
+
     imagebutton:
         xalign 0.49 yalign 0.55
         focus_mask True
@@ -739,6 +818,13 @@ screen thicket_activation:
 
 ### Solution: 444
 screen thicket_controls:
+    imagebutton:
+        focus_mask True
+        xalign 0.01 yalign 0.01
+        idle "help_button"
+        hover "help_button_hover"
+        action Show("help_window")
+
     add "menus/datapad_back_hori.png" xalign 0.5 yalign 0.5
     add "menus/thicket_puz_frame.png" xalign 0.5 yalign 0.5
 
@@ -798,6 +884,13 @@ screen thicket_controls:
 ### Water Source Puzzle ###
 ### Solution: 
 screen water_source_controls:
+    imagebutton:
+        focus_mask True
+        xalign 0.01 yalign 0.01
+        idle "help_button"
+        hover "help_button_hover"
+        action Show("help_window")
+
     add "menus/datapad_back.png" xalign 0.5 yalign 0.5
     add "menus/source_puz_frame.png" xalign 0.5 yalign 0.5
     
@@ -834,6 +927,14 @@ screen water_source_controls:
                 hover "down_arrow_hover"
                 action Function(puz.move_robo_down), SetVariable("puz.arrow_dir", "down"), Function(puz.get_nearest), Function(puz.check_robo_pos), Function(puz.get_nearest),
 
+        imagebutton:
+            xalign 0.64 yalign 0.88
+            idle "reset_button"
+            hover "reset_button_hover"
+            action Function(puz.reset_rock)
+
+        text "{=datapad_body_text}RESET" xalign 0.635 yalign 0.87
+
     else:
         vbox:
             xalign 0.5 yalign 0.83
@@ -849,3 +950,91 @@ screen water_source_controls:
                 action Jump("water_source_solved"), Hide("water_source_controls")
 
         text "{=datapad_text}EXIT" xalign 0.5 yalign 0.83
+
+
+### Chapter 3 Puzzles ###
+### Arm Puzzle ###
+screen collect_arms:
+    imagebutton:
+        focus_mask True
+        xalign 0.01 yalign 0.01
+        idle "help_button"
+        hover "help_button_hover"
+        action Show("help_window")
+
+    if not inv.datapad_opened:
+        imagebutton:
+            xalign 0.5 yalign 0.97
+            idle "menus/expand.png"
+            hover "menus/expand_highlight.png"
+            action SetVariable("inv.datapad_opened", True), Show("datapad")
+
+    if puz.got_arm_1 == False:
+        imagebutton:
+            xalign 1.0 yalign 0.4
+            focus_mask True
+            idle "puzzles/arm_1.png"
+            hover "puzzles/arm_1_hover.png"
+            action SetVariable("puz.got_arm_1", True)
+        
+    if puz.got_arm_2 == False:
+        imagebutton:
+            xalign 0.8 yalign 0.75
+            focus_mask True
+            idle "puzzles/arm_2.png"
+            hover "puzzles/arm_2_hover.png"
+            action SetVariable("puz.got_arm_2", True)
+
+    if puz.got_arm_3 == False:        
+        imagebutton:
+            xalign 0.0 yalign 0.72
+            focus_mask True
+            idle "puzzles/arm_3.png"
+            hover "puzzles/arm_3_hover.png"
+            action SetVariable("puz.got_arm_3", True)
+
+### Sound Puzzle ###
+### Solution: 1 2 3 4 5
+screen sound_pattern:
+    add "images/datapad_back.png" xalign 0.5 yalign 0.5
+
+### Help Window ###
+screen help_window:
+    modal True
+
+    # closes screen
+    imagebutton:
+        focus_mask True
+        idle "menus/help_window_close.png"
+        action Hide("help_window") 
+
+    add "menus/help_window.png" xalign 0.5 yalign 0.5
+
+    if puz.puz_tag == "Tutorial":
+        vbox:
+            xalign 0.5 yalign 0.5
+            spacing 50
+            text "You need to unlock your datapad! But you can't remember your password..." xmaximum 750
+            text "Maybe MUS-L can help?" xmaximum 750
+
+    elif puz.puz_tag == "Thicket1":
+        vbox:
+            xalign 0.5 yalign 0.5
+            spacing 50
+            text "Click on the arrows at the bottom of the screen. Each arrow will either decrease or increase the value of one or more of the green bars." xmaximum 750
+            text "To complete the puzzle, click the arrows until every green bar reaches the top of the screen at the same time." xmaximum 750
+
+    elif puz.puz_tag == "Water1":
+        vbox:
+            xalign 0.5 yalign 0.5
+            spacing 50
+            text "Click on the arrows to control MUS-L, the orange square. If there is enough space, MUS-L can push a rock out of the way when he is next to one." xmaximum 750
+            text "To complete the puzzle, help MUS-L move the rocks until he reaches the goal at the top of the screen. If you get stuck, you can reset the puzzle." xmaximum 750
+
+    elif puz.puz_tag == "Arms":
+        vbox:
+            xalign 0.5 yalign 0.5
+            spacing 50
+            text "Collect the pieces of Avery's replacement arm scattered around the area. You can check your progress by looking at your datapad." xmaximum 750
+            text "Once you've found all the pieces, you can use your datapad to give the arm to Avery." xmaximum 750
+
