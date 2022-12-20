@@ -1,17 +1,26 @@
 # Folders #
 cache/
 saves/
+images/
+audio/
+gui/
 
 # Compiled #
 *.rpyc
 *.rpymc
+*.json
 
 # Log files #
 errors.txt
 files.txt
 log.txt
 traceback.txt
+Dialogue.txt
+Dialogue_temp.txt
 
 # Image Layers #
 *.mdp
 *.psd
+
+# Fonts #
+*.tff

@@ -1,12 +1,14 @@
 # Script to store images/names/transformations
 
+# Also stores information for sound effects, such as looping and start times
+
 
 #################################
 ## Characters ###################
 #################################
 
 ### Temp player name ###
-define p = Character("You")
+define p = Character("You", color="#ffffff")
 
 ### Avery ###
 
@@ -48,6 +50,7 @@ image bg blank = im.Scale("backgrounds/blank.png", 1920, 1080)
 image bg waterfall = im.Scale("backgrounds/waterfall.png", 1920, 1080)
 image bg thicket = im.Scale("backgrounds/thicket.png", 1920, 1080)
 image bg water_source = im.Scale("backgrounds/watersource.png", 1920, 1080)
+image bg core = im.Scale("backgrounds/core.png", 1920, 1080)
 
 #################################
 ## Menus ########################
@@ -68,3 +71,26 @@ image reset_button = im.Scale("menus/confirm_button.png", 150, 75)
 image reset_button_hover = im.Scale("menus/confirm_button_hover.png", 150, 75)
 image help_button = im.Scale("menus/help.png", 150, 150)
 image help_button_hover = im.Scale("menus/help_hover.png", 150, 150)
+
+
+#################################
+## Audio ########################
+#################################
+
+### Characters ###
+# MUS-L's happy beep: play sound "<from 0.7>Audio/Happy_beep2.wav"
+
+# MUS-L's sad beep: "<from 2.7>audio/Sad_beep.wav"
+
+### Items ###
+# Paper rustle: play sound "<from 1.9 to 5>audio/Paper_rustle.wav"
+
+# Click button: Play("sound", "<from 0.3>audio/Click_button.wav") OR Play("sound", "<from 0.345>audio/Click_button.wav")
+
+# Open inventory: play sound "<from 0.4>audio/Inventory_click.wav" // Play("sound", "<from 0.4>audio/Inventory_click.wav")
+
+# Correct jingle: play sound "audio/Correct_jingle.wav" // Play("sound", "audio/Correct_jingle.wav")
+
+# Incorrect jingle: play sound "audio/Incorrect_jingle.wav" 
+
+# Datapad beep: play sound "<from 0.5>audio/Datapad_beeping.wav"

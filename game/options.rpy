@@ -12,8 +12,11 @@
 ##
 ## The _() surrounding the string marks it as eligible for translation.
 
-define config.name = _("BDP_Project")
+define config.name = _("XB-2513")
 
+define config.developer = False
+
+define config.rollback_enabled = False
 
 ## Determines if the title given above is shown on the main menu screen. Set
 ## this to False to hide the title.
@@ -23,13 +26,20 @@ define gui.show_name = True
 
 ## The version of the game.
 
-define config.version = "0.3"
+define config.version = "1.1"
 
 
 ## Text that is placed on the game's about screen. Place the text between the
 ## triple-quotes, and leave a blank line between paragraphs.
 
-define gui.about = _p("""
+define gui.about = _p("""X.B-2513 is a point and click sci-fi adventure game created for Dr. Paul Toprac's BDP 101
+Exploring Digital Arts & Media course.
+
+Kayla Han: Programming & character art
+
+Natalie Tobita: Sound design & background art
+
+Zane Stewart: Writing & concept design
 """)
 
 
@@ -37,7 +47,7 @@ define gui.about = _p("""
 ## distribution. This must be ASCII-only, and must not contain spaces, colons,
 ## or semicolons.
 
-define build.name = "BDP_Project"
+define build.name = "XB-2513"
 
 
 ## Sounds and music ############################################################
@@ -61,7 +71,7 @@ define config.has_voice = True
 ## the player is at the main menu. This file will continue playing into the
 ## game, until it is stopped or another file is played.
 
-# define config.main_menu_music = "main-menu-theme.ogg"
+define config.main_menu_music = "<from 0.0 to 30.0>Audio/Menu_8bit.wav"
 
 
 ## Transitions #################################################################
@@ -142,7 +152,7 @@ default preferences.afm_time = 15
 ## This generally should not be changed, and if it is, should always be a
 ## literal string, not an expression.
 
-define config.save_directory = "BDP_Project-1631767719"
+define config.save_directory = "XB-2513-1631767719"
 
 
 ## Icon ########################################################################
@@ -193,6 +203,7 @@ init python:
     build.classify('game/**.png', 'archive')
     build.classify('game/**.jpg', 'archive')
     build.classify('game/**.ttf', 'archive')
+    build.classify('game/**.wav', 'archive')
 
 
     ## Files matching documentation patterns are duplicated in a mac app build,

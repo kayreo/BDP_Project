@@ -32,7 +32,6 @@ style button_text is gui_text:
     properties gui.text_properties("button")
     yalign 0.5
 
-
 style label_text is gui_text:
     properties gui.text_properties("label", accent=True)
 
@@ -209,7 +208,7 @@ screen choice(items):
 
     vbox:
         for i in items:
-            textbutton i.caption action i.action
+            textbutton i.caption action Play("sound", "<from 0.345>audio/menus/Click_button.wav"), i.action
 
 
 ## When this is true, menu captions will be spoken by the narrator. When false,
@@ -253,14 +252,14 @@ screen quick_menu():
             xalign 0.5
             yalign 1.0
 
-            textbutton _("Back") action Rollback()
-            textbutton _("History") action ShowMenu('history')
-            textbutton _("Skip") action Skip() alternate Skip(fast=True, confirm=True)
-            textbutton _("Auto") action Preference("auto-forward", "toggle")
-            textbutton _("Save") action ShowMenu('save')
-            textbutton _("Q.Save") action QuickSave()
-            textbutton _("Q.Load") action QuickLoad()
-            textbutton _("Prefs") action ShowMenu('preferences')
+            #textbutton _("Back") action Play("sound", "<from 0.345>audio/menus/Click_button.wav"), Rollback()
+            textbutton _("History") action Play("sound", "<from 0.345>audio/menus/Click_button.wav"), ShowMenu('history')
+            textbutton _("Skip") action Play("sound", "<from 0.345>audio/menus/Click_button.wav"), Skip() alternate Skip(fast=True, confirm=True)
+            textbutton _("Auto") action Play("sound", "<from 0.345>audio/menus/Click_button.wav"), Preference("auto-forward", "toggle")
+            textbutton _("Save") action Play("sound", "<from 0.345>audio/menus/Click_button.wav"), ShowMenu('save')
+            textbutton _("Q.Save") action Play("sound", "<from 0.345>audio/menus/Click_button.wav"), QuickSave()
+            textbutton _("Q.Load") action Play("sound", "<from 0.345>audio/menus/Click_button.wav"), QuickLoad()
+            textbutton _("Prefs") action Play("sound", "<from 0.345>audio/menus/Click_button.wav"), ShowMenu('preferences')
 
 
 ## This code ensures that the quick_menu screen is displayed in-game, whenever
@@ -289,6 +288,34 @@ style quick_button_text:
 ## This screen is included in the main and game menus, and provides navigation
 ## to other menus, and to start the game.
 
+screen main_navigation():
+    vbox:
+        #style_prefix "navigation"
+
+        xalign 0.5 #gui.navigation_xpos
+        yalign 0.465
+
+        spacing gui.navigation_spacing
+
+        textbutton _("{size=37}New game") action Play("sound", "<from 0.345>audio/menus/Click_button.wav"), Start() xalign 0.5
+
+        textbutton _("{size=37}Load game") action Play("sound", "<from 0.345>audio/menus/Click_button.wav"), ShowMenu("load") xalign 0.5
+
+        textbutton _("{size=37}Preferences") action Play("sound", "<from 0.345>audio/menus/Click_button.wav"), ShowMenu("preferences") xalign 0.5
+
+        textbutton _("{size=37}About") action Play("sound", "<from 0.345>audio/menus/Click_button.wav"), ShowMenu("about") xalign 0.5
+
+        if renpy.variant("pc") or (renpy.variant("web") and not renpy.variant("mobile")):
+
+            ## Help isn't necessary or relevant to mobile devices.
+            textbutton _("{size=37}Help") action Play("sound", "<from 0.345>audio/menus/Click_button.wav"), ShowMenu("help") xalign 0.5
+
+        if renpy.variant("pc"):
+
+            ## The quit button is banned on iOS and unnecessary on Android and
+            ## Web.
+            textbutton _("{size=37}Quit") action Quit(confirm=not main_menu) xalign 0.5
+            
 screen navigation():
 
     vbox:
@@ -301,38 +328,45 @@ screen navigation():
 
         if main_menu:
 
-            textbutton _("Start") action Start()
+            #textbutton _("New game") action Start() xalign 0.5
+
+            textbutton _("Load game") action Play("sound", "<from 0.345>audio/menus/Click_button.wav"), ShowMenu("load") xalign 0.5
+
+            textbutton _("Preferences") action Play("sound", "<from 0.345>audio/menus/Click_button.wav"), ShowMenu("preferences") xalign 0.5
+
+            textbutton _("About") action Play("sound", "<from 0.345>audio/menus/Click_button.wav"), ShowMenu("about") xalign 0.5
 
         else:
 
-            textbutton _("History") action ShowMenu("history")
+            textbutton _("History") action Play("sound", "<from 0.345>audio/menus/Click_button.wav"), ShowMenu("history")
 
-            textbutton _("Save") action ShowMenu("save")
+            textbutton _("Save game") action Play("sound", "<from 0.345>audio/menus/Click_button.wav"), ShowMenu("save")
 
-        textbutton _("Load") action ShowMenu("load")
+            textbutton _("Load game") action Play("sound", "<from 0.345>audio/menus/Click_button.wav"), ShowMenu("load") xalign 0.5
 
-        textbutton _("Preferences") action ShowMenu("preferences")
+            textbutton _("Preferences") action Play("sound", "<from 0.345>audio/menus/Click_button.wav"), ShowMenu("preferences") xalign 0.5
+
+            textbutton _("About") action Play("sound", "<from 0.345>audio/menus/Click_button.wav"), ShowMenu("about") xalign 0.5
+
 
         if _in_replay:
 
-            textbutton _("End Replay") action EndReplay(confirm=True)
+            textbutton _("End Replay") action Play("sound", "<from 0.345>audio/menus/Click_button.wav"), EndReplay(confirm=True)
 
         elif not main_menu:
 
-            textbutton _("Main Menu") action MainMenu()
-
-        textbutton _("About") action ShowMenu("about")
+            textbutton _("Main Menu") action Play("sound", "<from 0.345>audio/menus/Click_button.wav"), MainMenu()
 
         if renpy.variant("pc") or (renpy.variant("web") and not renpy.variant("mobile")):
 
             ## Help isn't necessary or relevant to mobile devices.
-            textbutton _("Help") action ShowMenu("help")
+            textbutton _("Help") action Play("sound", "<from 0.345>audio/menus/Click_button.wav"), ShowMenu("help") xalign 0.5
 
         if renpy.variant("pc"):
 
             ## The quit button is banned on iOS and unnecessary on Android and
             ## Web.
-            textbutton _("Quit") action Quit(confirm=not main_menu)
+            textbutton _("Quit") action Play("sound", "<from 0.345>audio/menus/Click_button.wav"), Quit(confirm=not main_menu) xalign 0.5
 
 
 style navigation_button is gui_button
@@ -367,16 +401,20 @@ screen main_menu():
 
     ## The use statement includes another screen inside this one. The actual
     ## contents of the main menu are in the navigation screen.
-    use navigation
+    use main_navigation
 
     if gui.show_name:
 
         vbox:
-            text "[config.name!t]":
+            xalign 0.5
+            yalign 0.2
+            text "{color=#FDD6DF}{font=consola.ttf}| X.B-2513 |":
                 style "main_menu_title"
 
-            text "[config.version]":
-                style "main_menu_version"
+        text "[config.version]":
+            xalign 0.995
+            yalign 0.995
+            style "main_menu_version"
 
 
 style main_menu_frame is empty
@@ -385,11 +423,11 @@ style main_menu_text is gui_text
 style main_menu_title is main_menu_text
 style main_menu_version is main_menu_text
 
-style main_menu_frame:
-    xsize 420
-    yfill True
+#style main_menu_frame:
+ #   xsize 420
+  #  yfill True
 
-    background "gui/overlay/main_menu.png"
+   # background "gui/overlay/main_menu.png"
 
 style main_menu_vbox:
     xalign 1.0
@@ -619,7 +657,7 @@ screen file_slots(title):
 
                 key_events True
                 xalign 0.5
-                action page_name_value.Toggle()
+                action Play("sound", "<from 0.345>audio/menus/Click_button.wav"), page_name_value.Toggle()
 
                 input:
                     style "page_label_text"
@@ -639,7 +677,7 @@ screen file_slots(title):
                     $ slot = i + 1
 
                     button:
-                        action FileAction(slot)
+                        action Play("sound", "<from 0.345>audio/menus/Click_button.wav"), FileAction(slot)
 
                         has vbox
 
@@ -651,7 +689,7 @@ screen file_slots(title):
                         text FileSaveName(slot):
                             style "slot_name_text"
 
-                        key "save_delete" action FileDelete(slot)
+                        key "save_delete" action Play("sound", "<from 0.345>audio/menus/Click_button.wav"), FileDelete(slot)
 
             ## Buttons to access other pages.
             hbox:
@@ -662,19 +700,19 @@ screen file_slots(title):
 
                 spacing gui.page_spacing
 
-                textbutton _("<") action FilePagePrevious()
+                textbutton _("<") action Play("sound", "<from 0.345>audio/menus/Click_button.wav"), FilePagePrevious()
 
                 if config.has_autosave:
-                    textbutton _("{#auto_page}A") action FilePage("auto")
+                    textbutton _("{#auto_page}A") action Play("sound", "<from 0.345>audio/menus/Click_button.wav"), FilePage("auto")
 
                 if config.has_quicksave:
-                    textbutton _("{#quick_page}Q") action FilePage("quick")
+                    textbutton _("{#quick_page}Q") action Play("sound", "<from 0.345>audio/menus/Click_button.wav"), FilePage("quick")
 
                 ## range(1, 10) gives the numbers from 1 to 9.
                 for page in range(1, 10):
-                    textbutton "[page]" action FilePage(page)
+                    textbutton "[page]" action Play("sound", "<from 0.345>audio/menus/Click_button.wav"), FilePage(page)
 
-                textbutton _(">") action FilePageNext()
+                textbutton _(">") action Play("sound", "<from 0.345>audio/menus/Click_button.wav"), FilePageNext()
 
 
 style page_label is gui_label
@@ -732,22 +770,22 @@ screen preferences():
                     vbox:
                         style_prefix "radio"
                         label _("Display")
-                        textbutton _("Window") action Preference("display", "window")
-                        textbutton _("Fullscreen") action Preference("display", "fullscreen")
+                        textbutton _("Window") action Play("sound", "<from 0.345>audio/menus/Click_button.wav"), Preference("display", "window")
+                        textbutton _("Fullscreen") action Play("sound", "<from 0.345>audio/menus/Click_button.wav"), Preference("display", "fullscreen")
 
-                vbox:
-                    style_prefix "radio"
-                    label _("Rollback Side")
-                    textbutton _("Disable") action Preference("rollback side", "disable")
-                    textbutton _("Left") action Preference("rollback side", "left")
-                    textbutton _("Right") action Preference("rollback side", "right")
+                #vbox:
+                 #   style_prefix "radio"
+                  #  label _("Rollback Side")
+                   # textbutton _("Disable") action Play("sound", "<from 0.345>audio/menus/Click_button.wav"), Preference("rollback side", "disable")
+                    #textbutton _("Left") action Play("sound", "<from 0.345>audio/menus/Click_button.wav"), Preference("rollback side", "left")
+                    #textbutton _("Right") action Play("sound", "<from 0.345>audio/menus/Click_button.wav"), Preference("rollback side", "right")
 
                 vbox:
                     style_prefix "check"
                     label _("Skip")
-                    textbutton _("Unseen Text") action Preference("skip", "toggle")
-                    textbutton _("After Choices") action Preference("after choices", "toggle")
-                    textbutton _("Transitions") action InvertSelected(Preference("transitions", "toggle"))
+                    textbutton _("Unseen Text") action Play("sound", "<from 0.345>audio/menus/Click_button.wav"), Preference("skip", "toggle")
+                    textbutton _("After Choices") action Play("sound", "<from 0.345>audio/menus/Click_button.wav"), Preference("after choices", "toggle")
+                    textbutton _("Transitions") action Play("sound", "<from 0.345>audio/menus/Click_button.wav"), InvertSelected(Preference("transitions", "toggle"))
 
                 ## Additional vboxes of type "radio_pref" or "check_pref" can be
                 ## added here, to add additional creator-defined preferences.
@@ -800,7 +838,7 @@ screen preferences():
                         null height gui.pref_spacing
 
                         textbutton _("Mute All"):
-                            action Preference("all mute", "toggle")
+                            action Play("sound", "<from 0.345>audio/menus/Click_button.wav"), Preference("all mute", "toggle")
                             style "mute_all_button"
 
 
@@ -988,11 +1026,11 @@ screen help():
 
             hbox:
 
-                textbutton _("Keyboard") action SetScreenVariable("device", "keyboard")
-                textbutton _("Mouse") action SetScreenVariable("device", "mouse")
+                textbutton _("Keyboard") action Play("sound", "<from 0.345>audio/menus/Click_button.wav"), SetScreenVariable("device", "keyboard")
+                textbutton _("Mouse") action Play("sound", "<from 0.345>audio/menus/Click_button.wav"), SetScreenVariable("device", "mouse")
 
                 if GamepadExists():
-                    textbutton _("Gamepad") action SetScreenVariable("device", "gamepad")
+                    textbutton _("Gamepad") action Play("sound", "<from 0.345>audio/menus/Click_button.wav"), SetScreenVariable("device", "gamepad")
 
             if device == "keyboard":
                 use keyboard_help
@@ -1028,13 +1066,13 @@ screen keyboard_help():
         label _("Tab")
         text _("Toggles dialogue skipping.")
 
-    hbox:
-        label _("Page Up")
-        text _("Rolls back to earlier dialogue.")
+    #hbox:
+     #   label _("Page Up")
+      #  text _("Rolls back to earlier dialogue.")
 
-    hbox:
-        label _("Page Down")
-        text _("Rolls forward to later dialogue.")
+    #hbox:
+       # label _("Page Down")
+       # text _("Rolls forward to later dialogue.")
 
     hbox:
         label "H"
@@ -1063,13 +1101,13 @@ screen mouse_help():
         label _("Right Click")
         text _("Accesses the game menu.")
 
-    hbox:
-        label _("Mouse Wheel Up\nClick Rollback Side")
-        text _("Rolls back to earlier dialogue.")
+    #hbox:
+     #   label _("Mouse Wheel Up\nClick Rollback Side")
+      #  text _("Rolls back to earlier dialogue.")
 
-    hbox:
-        label _("Mouse Wheel Down")
-        text _("Rolls forward to later dialogue.")
+   # hbox:
+    #    label _("Mouse Wheel Down")
+     #   text _("Rolls forward to later dialogue.")
 
 
 screen gamepad_help():
@@ -1078,13 +1116,13 @@ screen gamepad_help():
         label _("Right Trigger\nA/Bottom Button")
         text _("Advances dialogue and activates the interface.")
 
-    hbox:
-        label _("Left Trigger\nLeft Shoulder")
-        text _("Rolls back to earlier dialogue.")
+   # hbox:
+    #    label _("Left Trigger\nLeft Shoulder")
+     #   text _("Rolls back to earlier dialogue.")
 
-    hbox:
-        label _("Right Shoulder")
-        text _("Rolls forward to later dialogue.")
+   # hbox:
+    #    label _("Right Shoulder")
+     #   text _("Rolls forward to later dialogue.")
 
 
     hbox:
@@ -1099,7 +1137,7 @@ screen gamepad_help():
         label _("Y/Top Button")
         text _("Hides the user interface.")
 
-    textbutton _("Calibrate") action GamepadCalibrate()
+    textbutton _("Calibrate") action Play("sound", "<from 0.345>audio/menus/Click_button.wav"),  GamepadCalibrate()
 
 
 style help_button is gui_button
@@ -1164,11 +1202,11 @@ screen confirm(message, yes_action, no_action):
                 xalign 0.5
                 spacing 150
 
-                textbutton _("Yes") action yes_action
-                textbutton _("No") action no_action
+                textbutton _("Yes") action Play("sound", "<from 0.345>audio/menus/Click_button.wav"),  yes_action
+                textbutton _("No") action Play("sound", "<from 0.345>audio/menus/Click_button.wav"), no_action
 
     ## Right-click and escape answer "no".
-    key "game_menu" action no_action
+    key "game_menu" action Play("sound", "<from 0.345>audio/menus/Click_button.wav"), no_action
 
 
 style confirm_frame is gui_frame
@@ -1265,7 +1303,7 @@ screen notify(message):
     frame at notify_appear:
         text "[message!tq]"
 
-    timer 3.25 action Hide('notify')
+    timer 3.25 action Play("sound", "<from 0.345>audio/menus/Click_button.wav"), Hide('notify')
 
 
 transform notify_appear:
@@ -1431,10 +1469,10 @@ screen quick_menu():
             xalign 0.5
             yalign 1.0
 
-            textbutton _("Back") action Rollback()
-            textbutton _("Skip") action Skip() alternate Skip(fast=True, confirm=True)
-            textbutton _("Auto") action Preference("auto-forward", "toggle")
-            textbutton _("Menu") action ShowMenu()
+            #textbutton _("Back") action Play("sound", "<from 0.345>audio/menus/Click_button.wav"), Rollback()
+            textbutton _("Skip") action Play("sound", "<from 0.345>audio/menus/Click_button.wav"), Skip() alternate Skip(fast=True, confirm=True)
+            textbutton _("Auto") action Play("sound", "<from 0.345>audio/menus/Click_button.wav"), Preference("auto-forward", "toggle")
+            textbutton _("Menu") action Play("sound", "<from 0.345>audio/menus/Click_button.wav"), ShowMenu()
 
 
 style window:
@@ -1453,9 +1491,9 @@ style nvl_window:
     variant "small"
     background "gui/phone/nvl.png"
 
-style main_menu_frame:
-    variant "small"
-    background "gui/phone/overlay/main_menu.png"
+#style main_menu_frame:
+ #   variant "small"
+  #  background "gui/phone/overlay/main_menu.png"
 
 style game_menu_outer_frame:
     variant "small"
